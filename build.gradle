@@ -4,36 +4,33 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://maven.google.com' }
+        // This is the specific backup repository for old Novoda plugins
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://dl.bintray.com/novoda/maven" } 
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.1.2'
+        // Adding the missing plugin here so the sub-project can find it
+        classpath 'com.novoda:bintray-release:0.9.2'
     }
 }
 
-
 allprojects {
     repositories {
+        // Aliyun Mirror logic
         def REPOSITORY_URL = 'https://maven.aliyun.com/nexus/content/groups/public/'
-        all { ArtifactRepository repo ->
-            if (repo instanceof MavenArtifactRepository) {
-                def url = repo.url.toString()
-                if (url.startsWith('https://repo1.maven.org/maven2') || url.startsWith('https://jcenter.bintray.com/')) {
-//                    project.logger.lifecycle "Repository ${repo.url} replaced by $REPOSITORY_URL."
-                    remove repo
-                }
-            }
-        }
-        maven {
-            url REPOSITORY_URL
-        }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-
+        
+        // Use a more modern approach to filtering repositories if needed, 
+        // but keeping your logic for consistency:
+        maven { url REPOSITORY_URL }
+        
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
-        maven { url "https://dl.bintray.com/novoda/maven" }
+        
+        // Backup for FingerprintIdentify artifacts
         maven { url "https://repo.gradle.org/artifactory/jcenter-backup" }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 }
 
